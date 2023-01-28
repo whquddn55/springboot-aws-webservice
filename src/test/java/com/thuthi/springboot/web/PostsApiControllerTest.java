@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.thuthi.springboot.domain.posts.Posts;
 import com.thuthi.springboot.domain.posts.PostsRepository;
+import com.thuthi.springboot.web.dto.PostsResponseDto;
 import com.thuthi.springboot.web.dto.PostsSaveRequestDto;
 import com.thuthi.springboot.web.dto.PostsUpdateRequestDto;
 import java.util.List;
@@ -93,5 +94,33 @@ class PostsApiControllerTest {
         List<Posts> all = postsRepository.findAll();
         assertThat(all.get(0).getTitle()).isEqualTo(expectedTitle);
         assertThat(all.get(0).getContent()).isEqualTo(expectedContent);
+    }
+
+    @Test
+    public void Posts_가져온다() throws Exception {
+        // given
+        String title = "title";
+        String content = "content";
+        String author = "author";
+        Posts savedPosts = postsRepository.save(Posts.builder()
+                .title(title)
+                .content(content)
+                .author(author)
+                .build());
+
+        Long id = savedPosts.getId();
+        String url = "http://localhost:" + port + "/api/v1/posts/" + id;
+
+        // when
+        ResponseEntity<PostsResponseDto> postsResponseDtoResponseEntity = restTemplate.getForEntity(url, PostsResponseDto.class, id);
+
+        // then
+        assertThat(postsResponseDtoResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(postsResponseDtoResponseEntity.getBody()).isNotNull();
+
+        assertThat(postsResponseDtoResponseEntity.getBody().getId()).isEqualTo(id);
+        assertThat(postsResponseDtoResponseEntity.getBody().getTitle()).isEqualTo(title);
+        assertThat(postsResponseDtoResponseEntity.getBody().getContent()).isEqualTo(content);
+        assertThat(postsResponseDtoResponseEntity.getBody().getAuthor()).isEqualTo(author);
     }
 }
