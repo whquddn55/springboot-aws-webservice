@@ -25,7 +25,6 @@ public class Posts {
     private String author;
 
     @Builder
-
     public Posts(Long id, String title, String content, String author) {
         this.id = id;
         this.title = title;
