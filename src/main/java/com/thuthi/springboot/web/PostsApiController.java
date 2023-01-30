@@ -1,11 +1,9 @@
 package com.thuthi.springboot.web;
 
 import com.thuthi.springboot.service.posts.PostsService;
-import com.thuthi.springboot.web.dto.PostsListResponseDto;
 import com.thuthi.springboot.web.dto.PostsResponseDto;
 import com.thuthi.springboot.web.dto.PostsSaveRequestDto;
 import com.thuthi.springboot.web.dto.PostsUpdateRequestDto;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,5 +35,13 @@ public class PostsApiController {
     public PostsResponseDto findById(
             @PathVariable Long id) {
         return postsService.findById(id);
+    }
+
+    @DeleteMapping("/api/v1/posts/{id}")
+    public Long delete(
+            @PathVariable Long id
+    ) {
+        postsService.delete(id);
+        return id;
     }
 }
