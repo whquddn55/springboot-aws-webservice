@@ -4,10 +4,10 @@ let main = {
         $('#btn-save').on('click', function () {
             _this.save();
         });
-        $('#btn-update').on('click',  function() {
+        $('#btn-update').on('click', function () {
             _this.update();
         });
-        $('#btn-delete').on('click',  function() {
+        $('#btn-delete').on('click', function () {
             _this.delete();
         });
     },
@@ -33,7 +33,7 @@ let main = {
         });
     },
 
-    update: function() {
+    update: function () {
         let data = {
             title: $('#title').val(),
             content: $('#content').val()
@@ -55,7 +55,7 @@ let main = {
         });
     },
 
-    delete: function() {
+    delete: function () {
         let id = $('#id').val();
 
         $.ajax({

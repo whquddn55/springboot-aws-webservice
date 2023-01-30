@@ -6,10 +6,10 @@ import lombok.Getter;
 
 @Getter
 public class PostsListResponseDto {
-    private Long id;
-    private String title;
-    private String author;
-    private LocalDateTime updatedAt;
+    private final Long id;
+    private final String title;
+    private final String author;
+    private final LocalDateTime updatedAt;
 
     public PostsListResponseDto(Posts posts) {
         this.id = posts.getId();

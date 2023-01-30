@@ -1,7 +1,6 @@
 package com.thuthi.springboot.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +16,7 @@ class IndexControllerTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
+
     @Test
     public void 메인페이지_로딩() throws Exception {
         // when

@@ -112,7 +112,8 @@ class PostsApiControllerTest {
         String url = "http://localhost:" + port + "/api/v1/posts/" + id;
 
         // when
-        ResponseEntity<PostsResponseDto> postsResponseDtoResponseEntity = restTemplate.getForEntity(url, PostsResponseDto.class, id);
+        ResponseEntity<PostsResponseDto> postsResponseDtoResponseEntity = restTemplate.getForEntity(url,
+                PostsResponseDto.class, id);
 
         // then
         assertThat(postsResponseDtoResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
