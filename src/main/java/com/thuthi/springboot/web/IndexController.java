@@ -1,5 +1,6 @@
 package com.thuthi.springboot.web;
 
+import com.thuthi.springboot.config.auth.LoginUser;
 import com.thuthi.springboot.config.auth.dto.SessionUser;
 import com.thuthi.springboot.service.posts.PostsService;
 import com.thuthi.springboot.web.dto.PostsResponseDto;
@@ -17,10 +18,9 @@ public class IndexController {
     private final HttpSession httpSession;
 
     @GetMapping("/")
-    public String index(Model model) {
+    public String index(@LoginUser SessionUser user, Model model) {
         model.addAttribute("posts", postsService.findAllDesc());
 
-        SessionUser user = (SessionUser) httpSession.getAttribute("user");
         if (user != null) {
             model.addAttribute("userName", user.getName());
         }
