@@ -10,6 +10,10 @@ spring:
     hibernate:
       ddl-auto: create
     show-sql: true
+  session:
+    store-type: jdbc
+    jdbc:
+      initialize-schema: always
 
 server:
   servlet:
