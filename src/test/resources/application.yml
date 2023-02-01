@@ -1,0 +1,31 @@
+spring:
+  profiles:
+    include: oauth
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/springaws
+    username: root
+    password: whxnxl55;;
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+  session:
+    store-type: jdbc
+    jdbc:
+      initialize-schema: always
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: tes
+            client-secret: test
+            scope:
+              - profile
+              - email
+
+server:
+  servlet:
+    encoding:
+      force-response: true
