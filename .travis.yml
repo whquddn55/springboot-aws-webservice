@@ -1,0 +1,19 @@
+language: java
+jdk:
+  - zulu17
+
+branches:
+  only:
+    - main
+
+cache:
+  directories:
+    - '$HOME/.2/repository'
+    - '$HOME/.gradle'
+
+script: "/.gradlew clean build"
+
+notifications:
+  email:
+    recipients:
+      - "whquddn55@gmail.com"
