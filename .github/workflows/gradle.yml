@@ -24,14 +24,24 @@ jobs:
     # Task의 sequence
     steps:
     - uses: actions/checkout@v3
-    - name: Set up JDK 11
+    - name: verify MySQL connection from host
+      run: |
+        sudo service mysql start
+        mysql -uroot -proot --host=localhost -e "CREATE DATABASE springaws"
+        mysql -uroot -proot --host=localhost -e "create user springaws identified by 'springaws'"
+        mysql -uroot -proot --host=localhost -e "grant all privileges on springaws.* to springaws"
+        sudo service mysql restart
+
+    - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
         java-version: '17'
         distribution: 'zulu'
+        
     - name: Run chmod to make gradle executable
       run: chmod +x ./gradlew
+
     - name: Build with Gradle
-      uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+      uses: gradle/gradle-build-action@v2.3.3
       with:
         arguments: build
