@@ -12,6 +12,14 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+      tags:
+        description: 'Test scenario tags'
 
 permissions:
   contents: read
@@ -23,7 +31,9 @@ jobs:
 
     # Task의 sequence
     steps:
+    # 저장소로 코드 내려받기
     - uses: actions/checkout@v3
+    # MySQL 세팅
     - name: verify MySQL connection from host
       run: |
         sudo service mysql start
@@ -31,17 +41,44 @@ jobs:
         mysql -uroot -proot --host=localhost -e "create user springaws identified by 'springaws'"
         mysql -uroot -proot --host=localhost -e "grant all privileges on springaws.* to springaws"
         sudo service mysql restart
-
+    # JDK17 세팅
     - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
         java-version: '17'
         distribution: 'zulu'
-        
+    # gradlew 권한 설정(execute)
     - name: Run chmod to make gradle executable
       run: chmod +x ./gradlew
-
+    # gradle build
     - name: Build with Gradle
       uses: gradle/gradle-build-action@v2.3.3
       with:
         arguments: build
+    # jar 파일 이동
+    - name: Move jar file to root
+      run: |
+        pwd
+        cd build/libs
+        ls -al
+        mv *.jar /home/runner/work/springboot-aws-webservice/springboot-aws-webservice/springboot-aws-webservice.jar
+    # 개발 서버로 jar 파일 전송
+    - name: Transfer jar file
+      uses: appleboy/scp-action@v0.1.3
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        overwrite: true
+        source: '*.jar'
+        target: 'workspace'
+    # 개발 서버에서 deploy.sh 실행
+    - name: Run deploy.sh
+      uses: appleboy/ssh-action@v0.1.7
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          cd workspace
+          sh deploy.sh
