@@ -28,6 +28,14 @@ jobs:
   build:
     # 실행 환경
     runs-on: ubuntu-latest
+    env:
+      PROJECT_NAME: springboot-aws-webservice
+      OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
+      OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
+      OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
+      OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
+      OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
+      OCI_CLI_BUCKET: ${{ secrets.OCI_CLI_BUCKET }}
 
     # Task의 sequence
     steps:
@@ -60,25 +68,35 @@ jobs:
       run: |
         pwd
         cd build/libs
-        ls -al
-        mv *.jar /home/runner/work/springboot-aws-webservice/springboot-aws-webservice/springboot-aws-webservice.jar
-    # 개발 서버로 jar 파일 전송
-    - name: Transfer jar file
-      uses: appleboy/scp-action@v0.1.3
+        BUILD_JAR_FILE_NAME=$(echo *.jar)
+        BUILD_JAR_FILE_NAME=$(echo ${BUILD_JAR_FILE_NAME%%.jar})
+        PUT_JAR_FILE_NAME=${BUILD_JAR_FILE_NAME}_run_${{ github.run_number }}_attempt_${{ github.run_attempt }}
+        echo "PUT_JAR_FILE_NAME=${PUT_JAR_FILE_NAME}" >> $GITHUB_ENV
+        mv ${BUILD_JAR_FILE_NAME}.jar /home/runner/work/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}/${PUT_JAR_FILE_NAME}.jar
+    - name: Upload jar to OCI Object Storage
+      uses: oracle-actions/run-oci-cli-command@v1.1.1
       with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
-        overwrite: true
-        source: '*.jar'
-        target: 'workspace'
-    # 개발 서버에서 deploy.sh 실행
-    - name: Run deploy.sh
-      uses: appleboy/ssh-action@v0.1.7
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
-        script: |
-          cd workspace
-          sh deploy.sh
+        silent: false
+        command: "os object put -bn ${{ env.OCI_CLI_BUCKET }} --file ${{ env.PUT_JAR_FILE_NAME }}.jar --no-overwrite"
+
+
+#     개발 서버로 jar 파일 전송
+#    - name: Transfer jar file
+#      uses: appleboy/scp-action@v0.1.3
+#      with:
+#        host: ${{ secrets.SSH_HOST }}
+#        username: ${{ secrets.SSH_USERNAME }}
+#        key: ${{ secrets.SSH_KEY }}
+#        overwrite: true
+#        source: '*.jar'
+#        target: 'workspace'
+#    # 개발 서버에서 deploy.sh 실행
+#    - name: Run deploy.sh
+#      uses: appleboy/ssh-action@v0.1.7
+#      with:
+#        host: ${{ secrets.SSH_HOST }}
+#        username: ${{ secrets.SSH_USERNAME }}
+#        key: ${{ secrets.SSH_KEY }}
+#        script: |
+#          cd workspace
+#          sh deploy.sh
