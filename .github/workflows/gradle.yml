@@ -72,24 +72,23 @@ jobs:
       with:
         command: "os object put -bn ${{ env.OCI_CLI_BUCKET }} --file ${{ env.PUT_JAR_FILE_NAME }}.jar --no-overwrite"
 
-
-#     개발 서버로 jar 파일 전송
-#    - name: Transfer jar file
-#      uses: appleboy/scp-action@v0.1.3
-#      with:
-#        host: ${{ secrets.SSH_HOST }}
-#        username: ${{ secrets.SSH_USERNAME }}
-#        key: ${{ secrets.SSH_KEY }}
-#        overwrite: true
-#        source: '*.jar'
-#        target: 'workspace'
-#    # 개발 서버에서 deploy.sh 실행
-#    - name: Run deploy.sh
-#      uses: appleboy/ssh-action@v0.1.7
-#      with:
-#        host: ${{ secrets.SSH_HOST }}
-#        username: ${{ secrets.SSH_USERNAME }}
-#        key: ${{ secrets.SSH_KEY }}
-#        script: |
-#          cd workspace
-#          sh deploy.sh
+    # 개발 서버로 jar 파일 전송
+    - name: Transfer jar file
+      uses: appleboy/scp-action@v0.1.3
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        overwrite: true
+        source: "${{ env.PUT_JAR_FILE_NAME }}.jar"
+        target: 'workspace/build'
+    # 개발 서버에서 deploy.sh 실행
+    - name: Run deploy.sh
+      uses: appleboy/ssh-action@v0.1.7
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          cd workspace
+          sh deploy.sh ${{ env.PUT_JAR_FILE_NAME }}.jar
