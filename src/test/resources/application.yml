@@ -1,6 +1,4 @@
 spring:
-  profiles:
-    include: oauth
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/springaws
@@ -19,7 +17,7 @@ spring:
       client:
         registration:
           google:
-            client-id: tes
+            client-id: test
             client-secret: test
             scope:
               - profile
