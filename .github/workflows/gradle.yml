@@ -82,6 +82,7 @@ jobs:
         overwrite: true
         source: "${{ env.PUT_JAR_FILE_NAME }}.jar"
         target: 'workspace/build'
+
     # 개발 서버에서 deploy.sh 실행
     - name: Run deploy.sh
       uses: appleboy/ssh-action@v0.1.7
@@ -90,5 +91,7 @@ jobs:
         username: ${{ secrets.SSH_USERNAME }}
         key: ${{ secrets.SSH_KEY }}
         script: |
-          cd workspace
-          sh deploy.sh ${{ env.PUT_JAR_FILE_NAME }}.jar
+          cd workspace/scripts
+          ./stop.sh
+          ./start.sh ${{ env.PUT_JAR_FILE_NAME }}.jar
+          ./health.sh
